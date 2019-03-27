@@ -46,8 +46,8 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	public int deleteUser(int userId) {
 		Session session = sessionFactory.getCurrentSession();
-		// Get User
 		User user = getUser(userId);
+		session.delete(user);
 		return userId;
 	}
 
