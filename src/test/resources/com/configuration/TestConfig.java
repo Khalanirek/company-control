@@ -15,17 +15,17 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.entity.Project;
-import com.entity.ProjectComment;
-import com.entity.ProjectPhase;
-import com.entity.ProjectPhaseComment;
-import com.entity.ProjectTask;
-import com.entity.ProjectTaskComment;
-import com.entity.User;
-import com.entity.UserPersonalDetails;
+import com.khalanirek.entity.Project;
+import com.khalanirek.entity.ProjectComment;
+import com.khalanirek.entity.ProjectPhase;
+import com.khalanirek.entity.ProjectPhaseComment;
+import com.khalanirek.entity.ProjectTask;
+import com.khalanirek.entity.ProjectTaskComment;
+import com.khalanirek.entity.User;
+import com.khalanirek.entity.UserPersonalDetails;
+import com.khalanirek.repository.UserRepository;
+import com.khalanirek.repository.impl.UserRepositoryImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.repository.UserRepository;
-import com.repository.impl.UserRepositoryImpl;
 
 @Configuration
 @EnableWebMvc
