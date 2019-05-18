@@ -1,21 +1,21 @@
 package com.khalanirek.service;
 
-import java.util.List;
-
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 import com.khalanirek.entity.User;
+import com.khalanirek.exception.notfound.UserNotFoundException;
+import com.khalanirek.exception.validation.ValidationException;
 
-@Transactional
+@Service
 public interface UserService {
 
-	public User saveUser(User user);
+	public User saveUser(User user) throws ValidationException;
 
-	public User getUser(int userId);
+	public User getUser(long userId) throws UserNotFoundException;
 
-	public List<User> getUsers();
+	public Iterable<User> getUsers();
 
-	public User updateUser(User user);
+	public User updateUser(User user) throws ValidationException;
 
-	public int deleteUser(int userId);
+	public void deleteUser(long userId) throws UserNotFoundException;
 }

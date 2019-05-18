@@ -3,6 +3,7 @@ package com.khalanirek.entity;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,11 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name="project_task")
 public class ProjectTask {
@@ -22,122 +27,36 @@ public class ProjectTask {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="project_task_id")
-	private int id;
+	private long projectTaskId;
 
 	@Column(name="tittle")
 	private String tittle;
 
-	@Column(name="project_id")
-	private int projectId;
+	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name="project_id")
+	private Project project;
 
-	@Column(name="phase_id")
-	private int phaseId;
+	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name="phase_id", referencedColumnName="project_phase_id")
+	private ProjectPhase projectPhase;
 
 	@Column(name="owner_id")
-	private int ownterId;
+	private long ownerId;
 
 	@Column(name="creator_id")
-	private int creatorId;
+	private long creatorId;
 
 	@Column(name="description")
 	private String description;
 
-	@Column(name="start_date")
-	private Timestamp startDate;
+	@Column(name="start_time")
+	private Timestamp startTime;
 
-	@Column(name="endDate")
-	private Timestamp endDate;
+	@Column(name="end_time")
+	private Timestamp endTime;
 
-	@JsonIgnore
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinColumn(name="task_id")
-	private List<ProjectTaskComment> taskComments;
-
-	public ProjectTask() {
-
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getTittle() {
-		return tittle;
-	}
-
-	public void setTittle(String tittle) {
-		this.tittle = tittle;
-	}
-
-	public int getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
-	}
-
-	public int getPhaseId() {
-		return phaseId;
-	}
-
-	public void setPhaseId(int phaseId) {
-		this.phaseId = phaseId;
-	}
-
-	public int getOwnterId() {
-		return ownterId;
-	}
-
-	public void setOwnterId(int ownterId) {
-		this.ownterId = ownterId;
-	}
-
-	public int getCreatorId() {
-		return creatorId;
-	}
-
-	public void setCreatorId(int creatorId) {
-		this.creatorId = creatorId;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Timestamp getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Timestamp startDate) {
-		this.startDate = startDate;
-	}
-
-	public Timestamp getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Timestamp endDate) {
-		this.endDate = endDate;
-	}
-
-	public List<ProjectTaskComment> getTaskComments() {
-		return taskComments;
-	}
-
-	public void setTaskComments(List<ProjectTaskComment> taskComments) {
-		this.taskComments = taskComments;
-	}
-
-
-
-
+	@JsonIgnore
+	private List<Comment> comments;
 }

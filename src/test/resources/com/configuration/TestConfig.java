@@ -23,8 +23,6 @@ import com.khalanirek.entity.ProjectTask;
 import com.khalanirek.entity.ProjectTaskComment;
 import com.khalanirek.entity.User;
 import com.khalanirek.entity.UserPersonalDetails;
-import com.khalanirek.repository.UserRepository;
-import com.khalanirek.repository.impl.UserRepositoryImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @Configuration
@@ -79,11 +77,4 @@ public class TestConfig {
 
         return dataSource;
     }
-
-    @Bean
-	public UserRepository userRepositoryImpl() {
-		return new UserRepositoryImpl(sessionFactory().getObject());
-	}
-
-
 }

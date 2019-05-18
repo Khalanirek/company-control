@@ -3,11 +3,14 @@ package com.khalanirek.unit.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,14 +21,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.khalanirek.entity.User;
-import com.khalanirek.repository.impl.UserRepositoryImpl;
+import com.khalanirek.exception.notfound.UserNotFoundException;
+import com.khalanirek.exception.validation.ValidationException;
+import com.khalanirek.repository.UserRepository;
 import com.khalanirek.service.impl.UserServiceImpl;
+import com.khalanirek.service.validation.UserPersistenceValidator;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
 	@Mock
-	UserRepositoryImpl userRepositoryImplMock;
+	UserRepository userRepositoryImplMock;
+
+	@Mock
+	UserPersistenceValidator userPersistenceValidatorMock;
 
 	@InjectMocks
 	private UserServiceImpl userServiceImpl;
@@ -39,26 +48,31 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void whenSaveUserThenSaveWithId0Test() {
-		when(userRepositoryImplMock.getUser(user.getUserId())).thenReturn(user);
-		when(userRepositoryImplMock.saveUser(any(User.class))).thenReturn(user.getUserId());
+	void whenSaveUserThenSaveWithId0Test() throws ValidationException {
+		doNothing().when(userPersistenceValidatorMock).validate(user);
 		userServiceImpl.saveUser(user);
 		ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-		verify(userRepositoryImplMock).saveUser(argument.capture());
+		verify(userRepositoryImplMock).save(argument.capture());
 		assertEquals(0, argument.getValue().getUserId());
 	}
 
 	@Test
-	void whenSaveUserThenReturnUserTest() {
-		when(userRepositoryImplMock.getUser(user.getUserId())).thenReturn(user);
-		when(userRepositoryImplMock.saveUser(any(User.class))).thenReturn(user.getUserId());
+	void whenSaveUserThenReturnUserTest() throws ValidationException {
+		when(userRepositoryImplMock.save(any(User.class))).thenReturn(user);
 		assertEquals(user, userServiceImpl.saveUser(user));
 	}
 
 	@Test
-	void whenGetUserXThenReturnUserX() {
-		when(userRepositoryImplMock.getUser(user.getUserId())).thenReturn(user);
+	void whenGetUserXThenReturnUserX() throws UserNotFoundException {
+		when(userRepositoryImplMock.findById(user.getUserId())).thenReturn(Optional.of(user));
 		assertEquals(user, userServiceImpl.getUser(user.getUserId()));
+	}
+
+	@Test
+	void whenGetUserWithWrongIdThenThrowException() {
+		user.setUserId(0);
+		when(userRepositoryImplMock.findById(user.getUserId())).thenReturn(Optional.empty());
+		assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUser(user.getUserId()));
 	}
 
 	@Test
@@ -66,33 +80,36 @@ class UserServiceImplTest {
 		List<User> usersList = new ArrayList<>();
 		usersList.add(new User());
 		usersList.add(new User());
-		when(userRepositoryImplMock.getUsers()).thenReturn(usersList);
+		when(userRepositoryImplMock.findAll()).thenReturn(usersList);
 		assertEquals(usersList, userServiceImpl.getUsers());
 	}
 
 	@Test
-	void whenUpdateNotExistingUserThenThrowIllegalArgumentException() {
+	void whenUpdateUserWithId0ThenThrowValidationException() {
 		user.setUserId(0);
-		assertThrows(IllegalArgumentException.class, () -> userServiceImpl.updateUser(null));
-		assertThrows(IllegalArgumentException.class, () -> userServiceImpl.updateUser(user));
+		assertThrows(ValidationException.class, () -> userServiceImpl.updateUser(user));
 	}
 
 	@Test
-	void whenUpdateExistingUserThenSaveThisUserAndReturnThisUser() {
-		when(userRepositoryImplMock.getUser(user.getUserId())).thenReturn(user);
-		when(userRepositoryImplMock.saveUser(any(User.class))).thenReturn(user.getUserId());
+	void whenUpdateExistingUserThenSaveThisUserAndReturnThisUser() throws ValidationException {
+		when(userRepositoryImplMock.save(any(User.class))).thenReturn(user);
+		doNothing().when(userPersistenceValidatorMock).validate(user);
 		assertEquals(user, userServiceImpl.updateUser(user));
 	}
 
 	@Test
-	void whenDeleteNotExistingUserThenReturnIllegalArgumentException() {
-		assertThrows(IllegalArgumentException.class, () -> userServiceImpl.deleteUser(-1));
-		assertThrows(IllegalArgumentException.class, () -> userServiceImpl.deleteUser(0));
+	void whenDeleteNotExistingUserThenReturnUserNotFoundException() throws UserNotFoundException {
+		user.setUserId(-1);
+		when(userRepositoryImplMock.findById(user.getUserId())).thenReturn(Optional.empty());
+		assertThrows(UserNotFoundException.class, () -> userServiceImpl.deleteUser(-1));
 	}
 
 	@Test
-	void whenDeleteExistingUserThenReturnDeletedUserId() {
-		when(userRepositoryImplMock.deleteUser(user.getUserId())).thenReturn(user.getUserId());
-		assertEquals(user.getUserId(), userServiceImpl.deleteUser(user.getUserId()));
+	void whenDeleteUserXThanDeleteUserX() throws UserNotFoundException {
+
+		when(userRepositoryImplMock.findById(user.getUserId())).thenReturn(Optional.of(user));
+		doNothing().when(userRepositoryImplMock).delete(user);
+		userServiceImpl.deleteUser(user.getUserId());
+		verify(userRepositoryImplMock, times(1)).delete(user);
 	}
 }

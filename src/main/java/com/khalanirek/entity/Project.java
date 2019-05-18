@@ -3,6 +3,7 @@ package com.khalanirek.entity;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +17,9 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name="project")
 public class Project {
@@ -23,7 +27,7 @@ public class Project {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="project_id")
-	private int projectId;
+	private long projectId;
 
 	@Column(name="number")
 	private int number;
@@ -48,118 +52,16 @@ public class Project {
 	@Column(name="end_time")
 	private Timestamp endTime;
 
-	@OneToMany(fetch=FetchType.EAGER)
-	@JoinColumn(name="project_id")
+	@OneToMany(mappedBy="project", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@JsonIgnore
 	private List<ProjectPhase> phases;
 
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="project", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JsonIgnore
-	@JoinColumn(name="project_id")
 	private List<ProjectTask> tasks;
 
-	@OneToMany(fetch=FetchType.LAZY)
-	@JsonIgnore
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinColumn(name="project_id")
-	private List<ProjectComment> projectComments;
-
-	public Project() {
-
-	}
-
-	public int getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public User getOwner() {
-		return owner;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}
-
-	public User getCreator() {
-		return creator;
-	}
-
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Timestamp getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Timestamp startTime) {
-		this.startTime = startTime;
-	}
-
-	public Timestamp getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Timestamp endTime) {
-		this.endTime = endTime;
-	}
-
-	public List<ProjectPhase> getPhases() {
-		return phases;
-	}
-
-	public void setPhases(List<ProjectPhase> phases) {
-		this.phases = phases;
-	}
-
-	public List<ProjectTask> getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(List<ProjectTask> tasks) {
-		this.tasks = tasks;
-	}
-
-	public List<ProjectComment> getComments() {
-		return projectComments;
-	}
-
-	public void setComments(List<ProjectComment> comments) {
-		this.projectComments = comments;
-	}
-
-	@Override
-	public String toString() {
-		return "Project [projectId=" + projectId + ", number=" + number + ", name=" + name + ", owner=" + owner
-				+ ", creator=" + creator + ", description=" + description + ", startTime=" + startTime + ", endTime="
-				+ endTime + "]";
-	}
-
-
+	@JsonIgnore
+	private List<Comment> comments;
 }

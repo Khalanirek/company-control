@@ -2,8 +2,6 @@ package com.khalanirek.configuration;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import com.configuration.TestConfig;
-
 public class SpringMVCDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
 	@Override
@@ -14,7 +12,7 @@ public class SpringMVCDispatcherServletInitializer extends AbstractAnnotationCon
 
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-		return new Class[] { TestConfig.class };
+		return new Class[] { AppConfig.class };
 	}
 
 	@Override

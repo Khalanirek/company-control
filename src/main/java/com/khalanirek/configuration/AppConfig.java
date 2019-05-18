@@ -9,41 +9,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.khalanirek.aspect.LoggingAspect;
-import com.khalanirek.controller.ProjectController;
-import com.khalanirek.controller.UserController;
-import com.khalanirek.controller.impl.ProjectControllerImpl;
-import com.khalanirek.controller.impl.UserControllerImpl;
+import com.khalanirek.entity.Comment;
 import com.khalanirek.entity.Project;
-import com.khalanirek.entity.ProjectComment;
 import com.khalanirek.entity.ProjectPhase;
-import com.khalanirek.entity.ProjectPhaseComment;
 import com.khalanirek.entity.ProjectTask;
-import com.khalanirek.entity.ProjectTaskComment;
 import com.khalanirek.entity.User;
 import com.khalanirek.entity.UserPersonalDetails;
-import com.khalanirek.repository.ProjectRepository;
-import com.khalanirek.repository.UserRepository;
-import com.khalanirek.repository.impl.ProjectRepositoryImpl;
-import com.khalanirek.repository.impl.UserRepositoryImpl;
-import com.khalanirek.service.ProjectService;
-import com.khalanirek.service.UserService;
-import com.khalanirek.service.impl.ProjectServiceImpl;
-import com.khalanirek.service.impl.UserServiceImpl;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
+@EnableJpaRepositories(basePackages = "com")
 @ComponentScan("com")
-public class AppConfig {
+public class AppConfig{
 
 	// Configuration Beans
 	@Bean
@@ -64,9 +55,7 @@ public class AppConfig {
 										   Project.class,
 										   ProjectPhase.class,
 										   ProjectTask.class,
-										   ProjectComment.class,
-										   ProjectPhaseComment.class,
-										   ProjectTaskComment.class
+										   Comment.class
 										   );
 		/*SessionFactory sessionFactory = new org.hibernate.cfg.Configuration()
 				.configure("hibernate.cfg.xml")
@@ -77,7 +66,7 @@ public class AppConfig {
 		return sessionFactory;
 	}
 
-    @Bean
+    @Bean(name="transactionManager")
     public PlatformTransactionManager txManager() {
         return new HibernateTransactionManager(sessionFactory().getObject());
     }
@@ -97,41 +86,21 @@ public class AppConfig {
         return dataSource;
     }
 
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+        vendorAdapter.setDatabase(Database.MYSQL);
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("com");
+        factory.setDataSource(dataSource);
+        return factory;
+    }
+
     @Bean
     public LoggingAspect loggingAspect() {
     	return new LoggingAspect();
     }
-
-    // Project Beans
-	@Bean
-	public ProjectController projectControllerImpl() {
-		return new ProjectControllerImpl(projectServiceImpl());
-	}
-
-    @Bean
-	public ProjectRepository projectRepositoryImpl() {
-		return new ProjectRepositoryImpl(sessionFactory().getObject());
-	}
-
-	@Bean
-	public ProjectService projectServiceImpl() {
-		return new ProjectServiceImpl(projectRepositoryImpl());
-	}
-
-    // User Beans
-	@Bean
-	public UserController userControllerImpl() {
-		return new UserControllerImpl(userServiceImpl());
-	}
-
-    @Bean
-	public UserRepository userRepositoryImpl() {
-		return new UserRepositoryImpl(sessionFactory().getObject());
-	}
-
-	@Bean
-	public UserService userServiceImpl() {
-		return new UserServiceImpl(userRepositoryImpl());
-	}
-
 }

@@ -1,34 +1,32 @@
 package com.khalanirek.controller;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.khalanirek.entity.User;
+import com.khalanirek.exception.notfound.UserNotFoundException;
+import com.khalanirek.exception.validation.ValidationException;
 
-@RestController
-@RequestMapping("/users")
+//@RestController
+//@RequestMapping("/users")
 public interface UserController {
 
 	@PostMapping("/")
-	public User addUser(@RequestBody User user);
+	public User addUser(@RequestBody User user) throws ValidationException;
 
 	@GetMapping("/{userId}")
-	public User getUser(@PathVariable("userId") int userId);
+	public User getUser(@PathVariable("userId") long userId) throws UserNotFoundException;
 
 	@GetMapping("/")
-	public List<User> getUsers();
+	public Iterable<User> getUsers();
 
 	@PutMapping("/")
-	public User updateUser(@RequestBody User user);
+	public User updateUser(@RequestBody User user) throws ValidationException;
 
 	@DeleteMapping("/{userId}")
-	public int deleteUser(@PathVariable int userId);
+	public void deleteUser(@PathVariable long userId) throws UserNotFoundException;
 }
