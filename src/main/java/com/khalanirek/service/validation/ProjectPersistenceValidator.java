@@ -21,7 +21,7 @@ public class ProjectPersistenceValidator implements Validator<Project> {
 		if (project.getNumber() <= 0) {
 			errors.add("Project number is wrong: " + project.getNumber());
 		}
-		if (project.getName().isEmpty()) {
+		if (project.getName() == null || project.getName().isEmpty()) {
 			errors.add("Project name is empty");
 		}
 		if (project.getOwner() == null) {

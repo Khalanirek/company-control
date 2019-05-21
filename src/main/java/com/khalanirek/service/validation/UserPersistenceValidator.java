@@ -18,7 +18,7 @@ public class UserPersistenceValidator implements Validator<User> {
 		if (user.getUserId() < 0) {
 			errors.add("User id is wrong: " + user.getUserId());
 		}
-		if (user.getRole().isEmpty()) {
+		if (user.getRole() == null || user.getRole().isEmpty()) {
 			errors.add("User role is empty");
 		}
 		if (user.getUserPersonalDetails() == null) {

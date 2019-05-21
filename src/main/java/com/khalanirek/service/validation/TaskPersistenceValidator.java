@@ -15,7 +15,7 @@ public class TaskPersistenceValidator implements Validator<ProjectTask> {
 		if (task.getProjectTaskId() < 0) {
 			errors.add("Wrong taskId: " + task.getProjectTaskId());
 		}
-		if (task.getTittle().isEmpty()) {
+		if (task.getTittle() == null || task.getTittle().isEmpty()) {
 			errors.add("TaskTitle is empty");
 		}
 		if (task.getProject() == null) {

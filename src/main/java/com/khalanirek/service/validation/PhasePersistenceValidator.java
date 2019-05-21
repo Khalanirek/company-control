@@ -18,7 +18,7 @@ public class PhasePersistenceValidator implements Validator<ProjectPhase> {
 		if (phase.getProject() == null) {
 			errors.add("Project is not set");
 		}
-		if (phase.getName().isEmpty()) {
+		if (phase.getName() == null || phase.getName().isEmpty()) {
 			errors.add("PhaseName is empty");
 		}
 		if (phase.getStartTime() == null) {

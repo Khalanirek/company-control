@@ -18,13 +18,13 @@ public class CommentPersistenceValidator implements Validator<Comment> {
 		if (comment.getCommentId() < 0) {
 			errors.add("CommentId is wrong: " + comment.getCommentId());
 		}
-		if (comment.getCommentType().isEmpty()) {
+		if (comment.getCommentType() == null || comment.getCommentType().isEmpty()) {
 			errors.add("CommentType is empty");
 		}
 		if (comment.getCommentTime() == null) {
 			errors.add("CommentTime is not set");
 		}
-		if (comment.getCommentText().isEmpty()) {
+		if (comment.getCommentText() == null || comment.getCommentText().isEmpty()) {
 			errors.add("CommentText is empty");
 		}
 		if (comment.getProject() == null) {
